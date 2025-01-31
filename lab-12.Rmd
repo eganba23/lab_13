@@ -1,24 +1,97 @@
 ---
-title: "Lab 12 - Colonizing Mars"
-author: "Insert your name here"
-date: "Insert date here"
+title: "Lab 13 - Colonizing Mars"
+author: "Benjamin Egan"
+date: "Start date 1-29"
 output: github_document
 ---
 
-### Load packages and data
-
-```{r load-packages, message=FALSE}
+```{r load-packages, message=FALSE, echo=FALSE}
 library(tidyverse) 
+library(ggplot2)
+library(MASS)
+
 ```
 
 ### Exercise 1
 
-Remove this text, and add your answer for Exercise 1 here.
-Add code chunks as needed.
-Don't forget to label your code chunk.
-Do not use spaces in code chunk labels.
+```{r 1.1 - colonist attributes}
+
+
+set.seed(123)
+
+age <- rnorm(100, mean = 30, sd = 5)
+
+df_colonists <- data.frame(id = 1:100, age)
+                                      
+
+```
+
+```{r 1.1 - visualizing data}
+
+data.frame(df_colonists) %>%
+ggplot(
+ aes(x=age)
+) + geom_histogram(binwidth=2,color="black", fill="blue") +
+  labs(title = "Histogram of Colonists Ages by Seed",
+       x = "Age", y = "Frequency") + 
+  theme_bw()
+  
+  
+
+```
+It created a roughly normal distribution that is centered at 30. It looks like changing the seed makes the distribution more normal. The 100 seed looks normally distributed and the 1000 seed even more so. Looks like it's due to random chance, as 999 seed doesn't have the nice bellcurve shape.
+
+
+```{r 1.3 assigning roles}
+
+role <- rep(c("engineer", "scientist", "medic"), 
+             each = 34, 
+             length.out = 100)
+print(role)
+```
+Most of the reason I chose this was for pure randomness. But I like that it listed out each role together.
+
+
+```{r 1.4 heathy}
+
+set.seed(123)
+
+df_colonists$marsgar <- runif(100, min = 40, max = 100)
+
+df_colonists %>%
+ggplot( aes(
+    x = age,
+    y = marsgar
+  ) )+
+  theme_bw()+
+  geom_point()+
+  geom_smooth(method=lm, color = "black",se = FALSE)+
+  labs(
+      x = "Age",
+      y = "MARSGAR",
+      title = "Scatterplot of Age and Health"
+  )
+
+```
+
 
 ### Exercise 2
+
+```{r 2.1 technical skills}
+
+df_colonists$technical_skills <- 2 * df_colonists$age + rnorm(100, mean = 0, sd = 1)
+
+df_colonists %>%
+lm(technical_skills = 2 * age + noise)
+
+set.seed(1235)
+
+
+
+
+```
+
+
 
 ...
 
