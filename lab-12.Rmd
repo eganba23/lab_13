@@ -104,7 +104,7 @@ df_colonists %>%
 ```{r problem solving}
 
 
-d_engineer <- rnorm(100, mean = 30, sd = 5)
+d_engineer <- rnorm(100, mean = 40, sd = 5)
 d_scientist <- rnorm(100, mean = 60, sd = 7)
 d_medic <- rnorm(100, mean = 90, sd = 2)
 
@@ -127,7 +127,11 @@ df_colonists %>%
 scale_fill_manual(values=c("blue", "red","green4"))+
   scale_color_manual(values=c("blue", "red","green4"))+
   geom_density(alpha = 0.7) +
-  theme_bw()
+  theme_bw()+
+  labs(
+    x = NULL,
+    y = "Level of Problem Solving"
+  )
 ```
 
 
