@@ -162,22 +162,43 @@ df_colonists %>%
 
 ```
 
+I used the code provided to create a correlation matrix for the big 5
+
 ```{r big 5 matrix}
 
 # Define the bigfive
-
-bigfive <- c("Openess", "Conscientiousness", "Extraversion", "Agreableness", "Narcicism")
+bigfive <- c("EX", "ES", "AG", "CO", "OP")
 
 # Create an empty matrix with dimensions equal to the number of bigfive
+cor_matrix <- matrix(0, ncol = length(bigfive), 
+                 nrow = length(bigfive), 
+                 dimnames = list(bigfive, bigfive))
 
 
 # Initialize the diagonal to 1
+diag(cor_matrix) <- 1
 
 # Function to set correlation values ensuring symmetry
+set_correlation <- function(matrix, row, column, value) {
+  matrix <- as.matrix(matrix)
+  matrix[row, column] <- value
+  matrix[column, row] <- value
+  return(matrix)
+}
 
+cor_matrix_bigfive <- cor_matrix <- cor_matrix %>% 
+  set_correlation("ES", "AG", 0.1576) %>% 
+  set_correlation("ES", "CO", 0.2306) %>% 
+  set_correlation("ES", "EX", 0.2599) %>% 
+  set_correlation("ES", "OP", 0.072) %>% 
+  set_correlation("AG", "CO", 0.2866) %>% 
+  set_correlation("AG", "EX", 0.1972) %>% 
+  set_correlation("AG", "OP", 0.1951) %>% 
+  set_correlation("CO", "EX", 0.186) %>% 
+  set_correlation("CO", "OP", 0.1574) %>% 
+  set_correlation("EX", "OP", 0.2949)
 
-
-
+print(cor_matrix_bigfive)
 
 ```
 
