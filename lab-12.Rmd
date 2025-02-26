@@ -10,6 +10,8 @@ library(tidyverse)
 library(ggplot2)
 library(MASS)
 
+#df_colonists <- subset(df_colonists, select = -c(resilience.1, agreeableness.1)) use if you need to remove extra columns
+
 ```
 
 ### Exercise 1
@@ -129,12 +131,53 @@ scale_fill_manual(values=c("blue", "red","green4"))+
   geom_density(alpha = 0.7) +
   theme_bw()+
   labs(
-    x = NULL,
-    y = "Level of Problem Solving"
+    y = NULL,
+    x = "Level of Problem Solving"
   )
 ```
 
+```{r using mvrnorm, message = FALSE}
 
-...
+mean_traits <- c(50, 50)
+cov_matrix <- matrix(c(100, 50, 
+                       50, 100), ncol = 2)
 
-Add exercise headings as needed.
+
+
+traits_data <- mvrnorm(n = 100, mu = mean_traits, Sigma = cov_matrix, empirical = FALSE)
+
+colnames(traits_data) <- c("resilience", "agreeableness")
+
+df_colonists <- cbind(df_colonists, traits_data)
+
+
+df_colonists %>%
+  ggplot(aes(
+    x = resilience,
+    y = agreeableness
+  ))+
+    geom_point()+
+  geom_line(stat = "smooth", method="lm", alpha = .6, color = "blue", se = FALSE)
+  
+
+```
+
+```{r big 5 matrix}
+
+# Define the bigfive
+
+bigfive <- c("Openess", "Conscientiousness", "Extraversion", "Agreableness", "Narcicism")
+
+# Create an empty matrix with dimensions equal to the number of bigfive
+
+
+# Initialize the diagonal to 1
+
+# Function to set correlation values ensuring symmetry
+
+
+
+
+
+```
+
