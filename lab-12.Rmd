@@ -5,7 +5,7 @@ date: "Start date 1-29"
 output: github_document
 ---
 
-```{r load-packages, message=FALSE, echo=FALSE}
+```{r load-packages, message=FALSE, warning = FALSE, echo=FALSE}
 library(tidyverse) 
 library(ggplot2)
 library(MASS)
@@ -14,7 +14,7 @@ library(MASS)
 
 ```
 
-### Exercise 1
+### Exercise 1 - Simulating colonists
 
 ```{r 1.1 - colonist attributes}
 
@@ -28,7 +28,9 @@ df_colonists <- data.frame(id = 1:100, age)
 
 ```
 
-```{r 1.1 - visualizing data}
+
+
+```{r 1.1 - visualizing base colonists}
 
 data.frame(df_colonists) %>%
 ggplot(
@@ -41,7 +43,8 @@ ggplot(
 
   
 ```
-It created a roughly normal distribution that is centered at 30. It looks like changing the seed makes the distribution more normal. The 100 seed looks normally distributed and the 1000 seed even more so. Looks like it's due to random chance, as 999 seed doesn't have the nice bellcurve shape.
+
+This is an age distribution graph. It created a roughly normal distribution that is centered at 30. It looks like changing the seed makes the distribution more normal. The 100 seed looks normally distributed and the 1000 seed even more so. Looks like it's due to random chance, as 999 seed doesn't have the nice bellcurve shape.
 
 
 ```{r 1.3 assigning roles}
@@ -55,9 +58,9 @@ df_colonists <- df_colonists %>%
 
 print(role)
 ```
-Most of the reason I chose this was for pure randomness. But I like that it listed out each role together.
+Here I assigned each of them roles. I chose this method mostly out of pure randomness. But I like that it listed out each role together.
 
-
+#### Health can be measured using the MARSGAR
 ```{r 1.4 heathy, message = FALSE}
 
 set.seed(123)
@@ -81,7 +84,7 @@ ggplot( aes(
 ```
 
 
-### Exercise 2
+### Exercise 2 - Growing the colonists' skills
 
 ```{r 2.1 technical skills and visual, warning = FALSE, message = FALSE}
 
@@ -98,10 +101,41 @@ df_colonists %>%
     x = age,
     y = technical_skills
   ))+
-  geom_point()+
-  geom_line(stat = "smooth", method="lm", alpha = .6, color = "blue", se = FALSE)
+  geom_point(alpha = .6)+
+  geom_line(stat = "smooth", method="lm", alpha = .6, color = "blue", se = FALSE)+
+  labs(
+    x = "Age",
+    y = "Technical Skill",
+    title = "Scatterplot of Colonist Age and Technical Skills"
+  )
 
 ```
+
+Here we can see that age is about evenly distributed among the roles
+
+```{r Plot age and tehcnical skill by role}
+
+df_colonists %>%
+  ggplot(aes(
+    x = age,
+    y = technical_skills,
+    color = as.factor(role)
+  ))+
+  geom_point(alpha = .6)+
+  scale_color_manual(values=c("blue", "red","green4"))+
+  geom_line(stat = "smooth", method="lm", alpha = .6, color = "black", se = FALSE)+
+  labs(
+    x = "Age",
+    y = "Technical Skill",
+    color = "Role",
+    title = "Scatterplot of Colonist Age and Technical Skills by Role"
+  )
+
+
+```
+
+
+### Problem solving for each colonist
 
 ```{r problem solving}
 
@@ -136,7 +170,9 @@ scale_fill_manual(values=c("blue", "red","green4"))+
   )
 ```
 
-```{r using mvrnorm, message = FALSE}
+## Using mvrnorm
+
+```{r simulate resilience and agreeableness, message = FALSE}
 
 mean_traits <- c(50, 50)
 cov_matrix <- matrix(c(100, 50, 
@@ -166,39 +202,22 @@ I used the code provided to create a correlation matrix for the big 5
 
 ```{r big 5 matrix}
 
-# Define the bigfive
-bigfive <- c("EX", "ES", "AG", "CO", "OP")
+cor_matrix_bigfive <- matrix(c(
+  1.0000, 0.2599, 0.1972, 0.1860, 0.2949,
+  0.2599, 1.0000, 0.1576, 0.2306, 0.0720,
+  0.1972, 0.1576, 1.0000, 0.2866, 0.1951,
+  0.1860, 0.2306, 0.2866, 1.0000, 0.1574,
+  0.2949, 0.0720, 0.1951, 0.1574, 1.0000
+  ), nrow=5, ncol=5, byrow=TRUE,
+  dimnames=list(c("EX", "ES", "AG", "CO", "OP"), 
+        c("EX", "ES", "AG", "CO", "OP")))
 
-# Create an empty matrix with dimensions equal to the number of bigfive
-cor_matrix <- matrix(0, ncol = length(bigfive), 
-                 nrow = length(bigfive), 
-                 dimnames = list(bigfive, bigfive))
-
-
-# Initialize the diagonal to 1
-diag(cor_matrix) <- 1
-
-# Function to set correlation values ensuring symmetry
-set_correlation <- function(matrix, row, column, value) {
-  matrix <- as.matrix(matrix)
-  matrix[row, column] <- value
-  matrix[column, row] <- value
-  return(matrix)
-}
-
-cor_matrix_bigfive <- cor_matrix <- cor_matrix %>% 
-  set_correlation("ES", "AG", 0.1576) %>% 
-  set_correlation("ES", "CO", 0.2306) %>% 
-  set_correlation("ES", "EX", 0.2599) %>% 
-  set_correlation("ES", "OP", 0.072) %>% 
-  set_correlation("AG", "CO", 0.2866) %>% 
-  set_correlation("AG", "EX", 0.1972) %>% 
-  set_correlation("AG", "OP", 0.1951) %>% 
-  set_correlation("CO", "EX", 0.186) %>% 
-  set_correlation("CO", "OP", 0.1574) %>% 
-  set_correlation("EX", "OP", 0.2949)
-
-print(cor_matrix_bigfive)
+people_with_personality <- cor_matrix_bigfive %>%
+  mvrnorm(n = 100, mu = rep(0,5), Sigma = .) %>%
+  as.data.frame()
 
 ```
+
+
+
 

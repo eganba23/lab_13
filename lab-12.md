@@ -3,7 +3,9 @@ Lab 13 - Colonizing Mars
 Benjamin Egan
 Start date 1-29
 
-### Exercise 1
+    ## Warning: package 'purrr' was built under R version 4.3.3
+
+### Exercise 1 - Simulating colonists
 
 ``` r
 set.seed(123)
@@ -24,12 +26,12 @@ ggplot(
        x = "Age", y = "Frequency")
 ```
 
-![](lab-12_files/figure-gfm/1.1%20-%20visualizing%20data-1.png)<!-- -->
-It created a roughly normal distribution that is centered at 30. It
-looks like changing the seed makes the distribution more normal. The 100
-seed looks normally distributed and the 1000 seed even more so. Looks
-like it’s due to random chance, as 999 seed doesn’t have the nice
-bellcurve shape.
+![](lab-12_files/figure-gfm/1.1%20-%20visualizing%20base%20colonists-1.png)<!-- -->
+This is an age distribution graph. It created a roughly normal
+distribution that is centered at 30. It looks like changing the seed
+makes the distribution more normal. The 100 seed looks normally
+distributed and the 1000 seed even more so. Looks like it’s due to
+random chance, as 999 seed doesn’t have the nice bellcurve shape.
 
 ``` r
 role <- rep(c("engineer", "scientist", "medic"), 
@@ -60,8 +62,10 @@ print(role)
     ##  [91] "medic"     "medic"     "medic"     "medic"     "medic"     "medic"    
     ##  [97] "medic"     "medic"     "medic"     "medic"
 
-Most of the reason I chose this was for pure randomness. But I like that
-it listed out each role together.
+Here I assigned each of them roles. I chose this method mostly out of
+pure randomness. But I like that it listed out each role together.
+
+#### Health can be measured using the MARSGAR
 
 ``` r
 set.seed(123)
@@ -85,7 +89,7 @@ ggplot( aes(
 
 ![](lab-12_files/figure-gfm/1.4%20heathy-1.png)<!-- -->
 
-### Exercise 2
+### Exercise 2 - Growing the colonists’ skills
 
 ``` r
 set.seed(1235)
@@ -113,11 +117,42 @@ df_colonists %>%
     x = age,
     y = technical_skills
   ))+
-  geom_point()+
-  geom_line(stat = "smooth", method="lm", alpha = .6, color = "blue", se = FALSE)
+  geom_point(alpha = .6)+
+  geom_line(stat = "smooth", method="lm", alpha = .6, color = "blue", se = FALSE)+
+  labs(
+    x = "Age",
+    y = "Technical Skill",
+    title = "Scatterplot of Colonist Age and Technical Skills"
+  )
 ```
 
 ![](lab-12_files/figure-gfm/2.1%20technical%20skills%20and%20visual-1.png)<!-- -->
+
+Here we can see that age is about evenly distributed among the roles
+
+``` r
+df_colonists %>%
+  ggplot(aes(
+    x = age,
+    y = technical_skills,
+    color = as.factor(role)
+  ))+
+  geom_point(alpha = .6)+
+  scale_color_manual(values=c("blue", "red","green4"))+
+  geom_line(stat = "smooth", method="lm", alpha = .6, color = "black", se = FALSE)+
+  labs(
+    x = "Age",
+    y = "Technical Skill",
+    color = "Role",
+    title = "Scatterplot of Colonist Age and Technical Skills by Role"
+  )
+```
+
+    ## `geom_smooth()` using formula = 'y ~ x'
+
+![](lab-12_files/figure-gfm/alternate%20plot-1.png)<!-- -->
+
+### Problem solving for each colonist
 
 ``` r
 d_engineer <- rnorm(100, mean = 40, sd = 5)
@@ -176,6 +211,8 @@ df_colonists %>%
 ```
 
 ![](lab-12_files/figure-gfm/using%20mvrnorm-1.png)<!-- -->
+
+I used the code provided to create a correlation matrix for the big 5
 
 ``` r
 # Define the bigfive
