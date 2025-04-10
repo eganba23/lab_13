@@ -355,8 +355,6 @@ colonies_stats <- full_join(colonies_means, colonies_sd, by = c("colony", "big_5
 
 
 
-
-
 view(colonies_stats)
 
 ```
