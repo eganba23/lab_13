@@ -5,6 +5,10 @@ date: "Start date 1-29"
 output: github_document
 ---
 
+Link to assignment:https://datascience4psych.github.io/DataScience4Psych/lab13.html
+
+Link to archived assignment:https://web.archive.org/web/20250414135229/https://datascience4psych.github.io/DataScience4Psych/lab13.html#exercise-4-preparing-for-the-unexpected
+
 ```{r load-packages, message=FALSE, warning = FALSE, echo=FALSE}
 library(tidyverse) 
 library(ggplot2)
