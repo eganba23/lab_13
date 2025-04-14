@@ -9,6 +9,7 @@ output: github_document
 library(tidyverse) 
 library(ggplot2)
 library(MASS)
+library(ggpubr)
 
 #df_colonists <- subset(df_colonists, select = -c(resilience.1, agreeableness.1)) use if you need to remove extra columns
 
@@ -359,46 +360,78 @@ view(colonies_stats)
 
 ```
 
-```{r test}
-means_big_data1 <- means_big_data %>%
-  mutate(big_5 = case_when(
-    c("Extraversion Mean","Extraversion SD") == TRUE ~ "Extraversion",
-    c("Neuroticism Mean", "Neuroticism SD") == TRUE ~ "Neuroticism",
-    c("Agreeableness Mean", "Agreeableness SD") == TRUE ~ "Agreeableness",
-    c("Conscientiousness Mean", "Conscientiousness SD") == TRUE ~ "Conscientiousness",
-    c("Openess Mean","Openess SD") == TRUE ~ "Conscinetousness"
-  ))
-
-
-```
-
 ```{r plotting means and sd}
 
-# Plot: Mean of EX
-p1 <- ggplot(means_big_data, aes(x = mean_ex)) +
-  geom_histogram(color = "black", fill = "skyblue", bins = 20) +
-  geom_vline(xintercept = -0.5, color = "red", linetype = "dashed") +
-  annotate("text", x = -0.5, y = Inf, label = "Pop Mean = -0.5", vjust = 2, color = "red") +
-  labs(title = "Distribution of Colony Mean Extraversion", x = "Mean EX", y = "Count")
 
-# Plot: SD of EX
-p2 <- ggplot(means_big_data, aes(x = sd_ex)) +
-  geom_histogram(color = "black", fill = "orange", bins = 20) +
-  geom_vline(xintercept = 1, color = "red", linetype = "dashed") +
-  annotate("text", x = 1, y = Inf, label = "Pop SD = 1", vjust = 2, color = "red") +
-  labs(title = "Distribution of Colony SD of Extraversion", x = "SD EX", y = "Count")
+means_big_data %>%
+ggplot(
+  aes(x = mean_ex)) +
+  geom_histogram(color = "black", fill = "blue", bins = 20) +
+  labs(
+    x = "Mean Extraversion", 
+    y = NULL,
+    title = "Distribution of Extraversion Mean",
+    subtitle = "Possible values range from -1 to 1"
+    )+
+  geom_vline(xintercept = -0.5, 
+             color = "white",
+             linetype = "dashed") +
+  annotate("text", 
+           x = -0.44, y = Inf, 
+           label = "Population Mean = -0.5", 
+           vjust = 2, 
+           color = "black")
 
-# Plot: Correlation between EX and OP
-p3 <- ggplot(means_big_data, aes(x = cor_ex_op)) +
-  geom_histogram(color = "black", fill = "plum", bins = 20) +
-  geom_vline(xintercept = 0.2949, color = "red", linetype = "dashed") +
-  annotate("text", x = 0.2949, y = Inf, label = "Pop r = 0.295", vjust = 2, color = "red") +
-  labs(title = "Distribution of r(EX, OP) Across Colonies", x = "Correlation", y = "Count")
 
-# Show plots
-p1
-p2
-p3
+
+means_big_data %>%
+ggplot(
+  aes(x = sd_ex)) +
+  geom_histogram(color = "black", fill = "red3", bins = 20) +
+  labs(
+    x = "SD Extraversion",
+    y = NULL,
+    title = "Distribution of Extraversion Standard Deviation")+
+  geom_vline(xintercept = 1, 
+             color = "black", 
+             linetype = "dashed") +
+  annotate("text", 
+           x = .96, y = Inf, 
+           label = "Population SD = 1", 
+           vjust = 2,
+           color = "black") 
+
+#correlation
+means_big_data %>%
+  ggplot(aes(
+   x = mean_ex,
+   y = mean_op
+   ))+
+  geom_point(alpha = .6)+
+  geom_smooth(method='lm', se = FALSE, formula= y~x)+
+  stat_cor(method = "pearson", label.x = -.35, label.y = .03)+
+  labs(
+    x = "Extraversion Means",
+    y = "Openness Means",
+    title = "Correlation of Extraversion and Openness across Colonies"
+  )
+
+#distribution of correlation
+means_big_data %>%
+ggplot(aes(x = cor_ex_op)) +
+  geom_histogram(color = "white", fill = "pink", bins = 20) +
+  labs(
+    x = "Correlation", 
+    y = "Count", 
+    title = "Distribution of Correlations of Extraversion and Openness across Colonies")+
+    geom_vline(xintercept = 0.2949, 
+               color = "black", 
+               linetype = "dashed") +
+  annotate("text", 
+           x = 0.21, y = Inf, 
+           label = "Population Correlation = 0.295", 
+           vjust = 2, 
+           color = "black")
 
 ```
 
