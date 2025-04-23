@@ -364,7 +364,7 @@ view(colonies_stats)
 
 ```
 
-```{r plotting means and sd}
+```{r plotting means and sd, eval = FALSE}
 
 
 means_big_data %>%
@@ -439,5 +439,65 @@ ggplot(aes(x = cor_ex_op)) +
 
 ```
 
+For some reason I worked on it earlier and it ran, but now it doesn't. This has something to do with me moving things around and not realizing I altered them. I asked chatGPT to recreate what I wanted.
 
+```{r chat recreation of above}
+
+
+# Filter for Extraversion and Openness
+extraversion_data <- colonies_stats %>% filter(big_5 == "Extraversion")
+openness_data <- colonies_stats %>% filter(big_5 == "Openess")
+
+# Plot 1: Histogram of mean Extraversion
+ggplot(extraversion_data, aes(x = Mean)) +
+  geom_histogram(color = "black", fill = "blue", bins = 20) +
+  labs(
+    x = "Mean Extraversion", 
+    y = NULL,
+    title = "Distribution of Extraversion Mean",
+    subtitle = "Possible values range from -1 to 1"
+  ) +
+  geom_vline(xintercept = -0.5, 
+             color = "white",
+             linetype = "dashed") +
+  annotate("text", 
+           x = -0.44, y = Inf, 
+           label = "Population Mean = -0.5", 
+           vjust = 2, 
+           color = "black")
+
+# Plot 2: Histogram of Extraversion Standard Deviation
+ggplot(extraversion_data, aes(x = `Standard Deviation`)) +
+  geom_histogram(color = "black", fill = "red3", bins = 20) +
+  labs(
+    x = "SD Extraversion",
+    y = NULL,
+    title = "Distribution of Extraversion Standard Deviation"
+  ) +
+  geom_vline(xintercept = 1, 
+             color = "black", 
+             linetype = "dashed") +
+  annotate("text", 
+           x = .96, y = Inf, 
+           label = "Population SD = 1", 
+           vjust = 2,
+           color = "black")
+
+# Plot 3: Correlation of Extraversion and Openness means across colonies
+# First, join extraversion and openness data
+cor_data <- extraversion_data %>%
+  select(colony, mean_ex = Mean) %>%
+  left_join(openness_data %>% select(colony, mean_op = Mean), by = "colony")
+
+ggplot(cor_data, aes(x = mean_ex, y = mean_op)) +
+  geom_point(alpha = .6) +
+  geom_smooth(method = 'lm', se = FALSE, formula = y ~ x) +
+  ggpubr::stat_cor(method = "pearson", label.x = -.35, label.y = .03) +
+  labs(
+    x = "Extraversion Means",
+    y = "Openness Means",
+    title = "Correlation of Extraversion and Openness across Colonies"
+  )
+
+```
 
