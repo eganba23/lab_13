@@ -443,61 +443,54 @@ For some reason I worked on it earlier and it ran, but now it doesn't. This has 
 
 ```{r chat recreation of above}
 
+# First, augment colonies_stats with cross‐colony correlations of EX and OP
+cor_ex_op <- big_simulated_data %>%
+  group_by(colony) %>%
+  summarize(cor_ex_op = cor(EX, OP))
 
-# Filter for Extraversion and Openness
-extraversion_data <- colonies_stats %>% filter(big_5 == "Extraversion")
-openness_data <- colonies_stats %>% filter(big_5 == "Openess")
+# Join that back into colonies_means / colonies_sd
+colonies_stats <- colonies_stats %>%
+  left_join(cor_ex_op, by = "colony")
 
-# Plot 1: Histogram of mean Extraversion
-ggplot(extraversion_data, aes(x = Mean)) +
+# -----------------------------------------------------------------
+colonies_stats %>%
+  filter(big_5 == "Extraversion") %>%
+  ggplot(aes(x = Mean)) +
   geom_histogram(color = "black", fill = "blue", bins = 20) +
   labs(
-    x = "Mean Extraversion", 
+    x = "Mean Extraversion",
     y = NULL,
     title = "Distribution of Extraversion Mean",
     subtitle = "Possible values range from -1 to 1"
   ) +
-  geom_vline(xintercept = -0.5, 
-             color = "white",
-             linetype = "dashed") +
-  annotate("text", 
-           x = -0.44, y = Inf, 
-           label = "Population Mean = -0.5", 
-           vjust = 2, 
-           color = "black")
+  geom_vline(xintercept = -0.5, linetype = "dashed") +
+  annotate("text", x = -0.44, y = Inf, label = "Population Mean = -0.5", vjust = 2)
 
-# Plot 2: Histogram of Extraversion Standard Deviation
-ggplot(extraversion_data, aes(x = `Standard Deviation`)) +
+# -----------------------------------------------------------------
+colonies_stats %>%
+  filter(big_5 == "Extraversion") %>%
+  ggplot(aes(x = `Standard Deviation`)) +
   geom_histogram(color = "black", fill = "red3", bins = 20) +
   labs(
     x = "SD Extraversion",
     y = NULL,
     title = "Distribution of Extraversion Standard Deviation"
   ) +
-  geom_vline(xintercept = 1, 
-             color = "black", 
-             linetype = "dashed") +
-  annotate("text", 
-           x = .96, y = Inf, 
-           label = "Population SD = 1", 
-           vjust = 2,
-           color = "black")
+  geom_vline(xintercept = 1, linetype = "dashed") +
+  annotate("text", x = 0.96, y = Inf, label = "Population SD = 1", vjust = 2)
 
-# Plot 3: Correlation of Extraversion and Openness means across colonies
-# First, join extraversion and openness data
-cor_data <- extraversion_data %>%
-  select(colony, mean_ex = Mean) %>%
-  left_join(openness_data %>% select(colony, mean_op = Mean), by = "colony")
-
-ggplot(cor_data, aes(x = mean_ex, y = mean_op)) +
-  geom_point(alpha = .6) +
-  geom_smooth(method = 'lm', se = FALSE, formula = y ~ x) +
-  ggpubr::stat_cor(method = "pearson", label.x = -.35, label.y = .03) +
+# -----------------------------------------------------------------
+# Distribution of per‐colony EX–OP correlations
+colonies_stats %>%
+  ggplot(aes(x = cor_ex_op)) +
+  geom_histogram(color = "white", fill = "pink", bins = 20) +
   labs(
-    x = "Extraversion Means",
-    y = "Openness Means",
-    title = "Correlation of Extraversion and Openness across Colonies"
-  )
+    x = "Correlation",
+    y = "Count",
+    title = "Distribution of Correlations of Extraversion and Openness"
+  ) +
+  geom_vline(xintercept = 0.2949, linetype = "dashed") +
+  annotate("text", x = 0.21, y = Inf, label = "Population Corr = 0.295", vjust = 2)
 
 ```
 
